@@ -5,15 +5,21 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+//Mongo Database instance connection 
+//var mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/news');
+
+//mongoDB dependencies
+require('./models/Posts');
+require('./models/Comments');
+
+//Route dependencies go below mongoDB dependencies
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
 
-//Mongo Database instance connection 
-var mongoose = require('mongoose');
-
-mongoose.connect('mongodb://localhost/news');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
