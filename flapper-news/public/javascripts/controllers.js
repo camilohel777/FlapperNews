@@ -4,53 +4,38 @@ app.controller('MainCtrl', [ '$scope', 'posts',
 function($scope, posts)
 {
   $scope.posts = posts.posts;
-  $scope.addPost = function()
-  {
-    if(!$scope.title || $scope.title === '')
-    {
-      return;
-    }
-    $scope.posts.push(
-      {
+  $scope.addPost = function() {
+    if(!$scope.title || $scope.title === '') { return; }
+    posts.create({ //Now saves posts to the server
       title: $scope.title,
       link: $scope.link,
-      upvotes: 0,
-      comments: [
-        {author: 'Joe', body: 'Cool Post!', upvotes: 0},
-        {author: 'Bob', body: 'Great idea but everything is wrong!', upvotes: 0}
-      ]
     });
     $scope.title = '';
     $scope.link = '';
   }
-  $scope.incrementUpvotes = function (post)
-  {
-    post.upvotes += 1;
+  $scope.incrementUpvotes = function (post) {
+    posts.upvote(post);
   }
 }]);
 
 app.controller('PostsCtrl', [
   '$scope',
-  '$stateParams',
   'posts',
-  function($scope, $stateParams, posts)
-  {
-    $scope.post = posts.posts[$stateParams.id];
-    $scope.addComment = function()
-    {
-      if($scope.body === '')
-      {
-        return;
-      }
-      $scope.post.comments.push({
+  'post',
+  function($scope, posts, post) {
+    $scope.post = post;
+
+    $scope.addComment = function(){
+      if($scope.body === ''){ return; }
+      posts.addComment(post._id, {
         body: $scope.body,
         author: 'user',
-        upvotes: 0
+      }).success(function(comment) {
+        $scope.post.comments.push(comment);
       });
       $scope.body = '';
-    };
-    $scope.incrementUpvotes = function (comment)
-    {
-        comment.upvotes += 1;
     }
+    $scope.incrementUpvotes = function(comment){
+        posts.upvoteComment(post, comment);
+    };
   }]);
